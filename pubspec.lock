@@ -15,13 +15,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.9.0"
-  blurry_modal_progress_hud:
-    dependency: "direct main"
-    description:
-      name: blurry_modal_progress_hud
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
   boolean_selector:
     dependency: transitive
     description:
@@ -156,6 +149,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  loading_indicator:
+    dependency: "direct main"
+    description:
+      name: loading_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
   logger:
     dependency: transitive
     description:
@@ -289,4 +289,4 @@ packages:
     version: "2.1.2"
 sdks:
   dart: ">=2.17.6 <3.0.0"
-  flutter: ">=1.20.0"
+  flutter: ">=2.0.0"

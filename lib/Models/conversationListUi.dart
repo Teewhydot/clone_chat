@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/UI/chat-screen.dart';
+import 'package:flash_chat/providers/delete_clone_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:progress_indicator_button/progress_button.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
 
@@ -19,12 +21,13 @@ class ConversationList extends StatefulWidget {
 
 class ConversationListState extends State<ConversationList> {
   final fireStore = FirebaseFirestore.instance;
-  final color = avatarColor();
-
   @override
   Widget build(BuildContext context) {
+
     ToastContext().init(context);
     Widget buildAlertDialog(BuildContext context) {
+      final deleteProvider = Provider.of<DeleteCloneProvider>(context,listen: false);
+      final isSpinningProvider =Provider.of<DeleteCloneProvider>(context);
       final nav = Navigator.of(context);
       bool hasInternet;
       return AlertDialog(
@@ -33,54 +36,46 @@ class ConversationListState extends State<ConversationList> {
             'Are you sure you want to delete this clone? This action is irreversible'),
         actions: [
           SizedBox(
-              width: 75.w,
-              height: 25.h,
-              child: ProgressButton(
-                borderRadius: BorderRadius.all(Radius.circular(10.r)),
-                onPressed: (AnimationController controller) {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'No',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )),
+            width: 75.w,
+            height: 25.h,
+            child: ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+              },
+              child: const Text('NO'),
+            ),
+          ),
           SizedBox(
             width: 75.w,
             height: 25.h,
-            child: ProgressButton(
-              progressIndicatorSize: 10.sp,
-              borderRadius: BorderRadius.all(Radius.circular(10.r)),
-              strokeWidth: 2,
-              child: const Text(
-                "Yes",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: (AnimationController controller) async {
-                if (controller.isCompleted) {
-                  controller.reverse();
-                } else {
-
+            child: ElevatedButton(
+                child: isSpinningProvider.spinning
+                    ? const LoadingIndicator(
+                        indicatorType: Indicator.ballPulse,
+                        colors: [Colors.white],
+                        strokeWidth: 2,
+                        backgroundColor: Colors.transparent,
+                        pathBackgroundColor: Colors.transparent)
+                    : const Text('Yes'),
+                onPressed: () async {
                   hasInternet = await InternetConnectionChecker().hasConnection;
                   if (hasInternet) {
-                    controller.forward();
+                   deleteProvider.setSpinning(true);
                     await deleteClone(widget.name);
                     nav.pop();
                     Toast.show("Clone deleted",
                         duration: Toast.lengthShort,
                         gravity: Toast.center,
                         backgroundColor: Colors.amberAccent.shade700);
+                   deleteProvider.setSpinning(false);
                   } else {
+                    deleteProvider.setSpinning(false);
                     Toast.show("No internet connection",
                         duration: Toast.lengthShort,
                         gravity: Toast.center,
                         backgroundColor: Colors.amberAccent.shade700);
                   }
-                }
-              },
-            ),
+                }),
           ),
         ],
       );

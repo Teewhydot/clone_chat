@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/chat_model.dart';
 import 'package:flash_chat/Models/constants.dart';

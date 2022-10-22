@@ -3,7 +3,7 @@ import 'package:flash_chat/Models/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:progress_indicator_button/progress_button.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:toast/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -15,9 +15,11 @@ class AddNewUserScreen extends StatefulWidget {
 }
 
 class _AddNewUserScreenState extends State<AddNewUserScreen> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     bool hasInternet;
+
     final nav = Navigator.of(context);
     final fireStore = FirebaseFirestore.instance;
     ToastContext().init(context);
@@ -35,17 +37,19 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         color: const Color(0xff757575),
         child: Container(
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20.r), topRight: Radius.circular(20.r))),
+                  topLeft: Radius.circular(20.r),
+                  topRight: Radius.circular(20.r))),
           child: Column(
             children: [
               addVerticalSpacing(10),
-               Text(
+              Text(
                 'Create a new clone',
                 style: TextStyle(
                   fontSize: 20.sp,
@@ -53,7 +57,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
               ),
               addVerticalSpacing(20),
               Padding(
-                padding:  EdgeInsets.only(left: 10.w, right: 10.w),
+                padding: EdgeInsets.only(left: 10.w, right: 10.w),
                 child: TextField(
                   controller: cloneNameController,
                   cursorColor: Colors.black,
@@ -77,7 +81,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                       borderRadius: BorderRadius.circular(25.r),
                     ),
                     hintText: "Enter your clones' name",
-                    contentPadding:  EdgeInsets.symmetric(
+                    contentPadding: EdgeInsets.symmetric(
                         vertical: 10.0.h, horizontal: 20.0.w),
                   ),
                 ),
@@ -86,60 +90,70 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
               SizedBox(
                 width: 150.w,
                 height: 30.h,
-                child: ProgressButton(
-                  progressIndicatorSize: 10.sp,
-                    borderRadius:  BorderRadius.all(Radius.circular(15.r)),
-                    strokeWidth: 2,
-                    child: Text(
-                      "Create clone",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.sp,
-                      ),
-                    ),
-                    onPressed: (AnimationController controller) async {
-                      hasInternet =
-                          await InternetConnectionChecker().hasConnection;
-                      if (cloneNameController.text.isEmpty) {
-                        Toast.show("Type in a valid name",
+                child: ElevatedButton(
+                  onPressed: () async {
+                    hasInternet =
+                        await InternetConnectionChecker().hasConnection;
+                    if (cloneNameController.text.isEmpty) {
+                      Toast.show("Type in a valid name",
+                          duration: Toast.lengthShort,
+                          gravity: Toast.center,
+                          backgroundColor: Colors.amberAccent.shade700);
+                    } else if (hasInternet == false) {
+                      Toast.show("No internet connection",
+                          duration: Toast.lengthShort,
+                          gravity: Toast.center,
+                          backgroundColor: Colors.amberAccent.shade700);
+                    } else {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      bool cloneExists =
+                          await checkExist(cloneNameController.text.trim());
+                      if (cloneExists) {
+                        Toast.show("Clone already exists",
+                            backgroundColor: Colors.amberAccent.shade700,
                             duration: Toast.lengthShort,
-                            gravity: Toast.center,
-                            backgroundColor: Colors.amberAccent.shade700);
-                      } else if (hasInternet == false) {
-                        Toast.show("No internet connection",
-                            duration: Toast.lengthShort,
-                            gravity: Toast.center,
-                            backgroundColor: Colors.amberAccent.shade700);
+                            gravity: Toast.center);
+                        setState(() {
+                          isLoading = false;
+                        });
                       } else {
-                        bool cloneExists =
-                            await checkExist(cloneNameController.text.trim());
-                        if (cloneExists) {
-                          Toast.show("Clone already exists",
-                              backgroundColor: Colors.amberAccent.shade700,
-                              duration: Toast.lengthShort,
-                              gravity: Toast.center);
-                        } else if (controller.isCompleted) {
-                          controller.reverse();
-                        } else {
-                          controller.forward();
-                          await fireStore
-                              .collection('clones')
-                              .doc(cloneNameController.text)
-                              .set({
-                            'cloneName': cloneNameController.text,
-                          });
-                          addCloneToFirebase(cloneNameController.text);
+                        await fireStore
+                            .collection('clones')
+                            .doc(cloneNameController.text)
+                            .set({
+                          'cloneName': cloneNameController.text,
+                        });
+                        addCloneToFirebase(cloneNameController.text);
 
-                          cloneNameController.clear();
-                          controller.reset();
-                          nav.pop();
-                          Toast.show('Clone created successfully',
-                              duration: Toast.lengthShort,
-                              backgroundColor: const Color(0xff903aff),
-                              gravity: Toast.center);
-                        }
+                        cloneNameController.clear();
+                        setState(() {
+                          isLoading = false;
+                        });
+                        nav.pop();
+                        Toast.show('Clone created successfully',
+                            duration: Toast.lengthShort,
+                            backgroundColor: const Color(0xff903aff),
+                            gravity: Toast.center);
                       }
-                    }),
+                    }
+                  },
+                  child: isLoading
+                      ? Row(
+                          children: [
+                            const LoadingIndicator(
+                                indicatorType: Indicator.ballPulse,
+                                colors: [Colors.white],
+                                strokeWidth: 2,
+                                backgroundColor: Colors.transparent,
+                                pathBackgroundColor: Colors.transparent),
+                            addHorizontalSpacing(5),
+                            const Text('Please wait'),
+                          ],
+                        )
+                      : const Text('Create Clone'),
+                ),
               ),
             ],
           ),

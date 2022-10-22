@@ -16,7 +16,7 @@ class FlashChat extends StatefulWidget {
 class _FlashChatState extends State<FlashChat> {
   Map<String, dynamic> data = {};
 
-  static List<ConversationList> conversationList=[];
+  static List<ConversationList> conversationList = [];
 
   List<ConversationList> displayList = List.from(conversationList);
   final fireStore = FirebaseFirestore.instance;
@@ -33,9 +33,7 @@ class _FlashChatState extends State<FlashChat> {
   }
 
   @override
-  Widget build(BuildContext context)  {
-
-
+  Widget build(BuildContext context) {
     Widget buildAlertDialog(BuildContext context) {
       return AlertDialog(
         title: const Text('FYI'),
@@ -44,29 +42,23 @@ class _FlashChatState extends State<FlashChat> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-             const Text('Clones + Chats = Clats'),
-             addVerticalSpacing(5),
+            const Text('Clones + Chats = Clats'),
+            addVerticalSpacing(5),
             const Text('Tap and hold on a clone to delete it'),
           ],
         ),
         actions: [
           SizedBox(
               width: 75.w,
-              height: 25.h,
-              child: ProgressButton(
-                progressIndicatorSize: 10.sp,
-                borderRadius:  BorderRadius.all(Radius.circular(10.r)),
-                strokeWidth: 2,
-                child: const Text(
-                  "Ok",
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                onPressed: (AnimationController controller) {
-                  Navigator.pop(context);
-                },
-              )),
+              height: 35.h,
+              child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blue),
+                  )))
         ],
       );
     }
@@ -127,7 +119,6 @@ class _FlashChatState extends State<FlashChat> {
             child: StreamBuilder<QuerySnapshot>(
                 stream: cloneStream,
                 builder: (context, snapshot) {
-
                   if (snapshot.hasError) {
                     return const Text('Something went wrong');
                   }
@@ -137,9 +128,10 @@ class _FlashChatState extends State<FlashChat> {
                     );
                   }
                   return ListView(
-                    children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                    children:
+                        snapshot.data!.docs.map((DocumentSnapshot document) {
                       Map<String, dynamic> data =
-                      document.data()! as Map<String, dynamic>;
+                          document.data()! as Map<String, dynamic>;
                       return ConversationList(data['cloneName']);
                     }).toList(),
                   );
