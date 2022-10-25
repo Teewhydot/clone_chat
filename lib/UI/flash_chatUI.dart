@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Models/conversationListUi.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/UI/add-new-user-screen.dart';
+import 'package:flash_chat/UI/create_username.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:progress_indicator_button/progress_button.dart';
 
 class FlashChat extends StatefulWidget {
   const FlashChat({Key? key}) : super(key: key);
@@ -30,6 +30,14 @@ class _FlashChatState extends State<FlashChat> {
     searchController.addListener(() {
       setState(() {});
     });
+  final binding =  WidgetsFlutterBinding.ensureInitialized();
+  binding.addPostFrameCallback((_) {
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) =>
+        const CreateUserNamePage());
+  });
   }
 
   @override
