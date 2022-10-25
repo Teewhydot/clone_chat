@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flash_chat/Models/chat_model.dart';
 import 'package:flash_chat/Models/themes.dart';
+import 'package:flash_chat/UI/create_username.dart';
 import 'package:flash_chat/firebase_options.dart';
 import 'package:flash_chat/providers/delete_clone_provider.dart';
 import 'package:flash_chat/providers/user_name_provider.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
           darkTheme: ThemeData.dark(),
           themeMode: ThemeMode.light,
           theme: lightTheme,
-          home: const FlashChat(),
+          home: const CreateUserNamePage(),
         );
       },
     );

@@ -1,9 +1,9 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_typing_uninitialized_variables, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Packages/constants.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
+import 'package:flash_chat/UI/flash_chatUI.dart';
 import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,7 +31,7 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
     Future<bool> checkExist(String docID) async {
       bool exist = false;
       await fireStore
-          .collection('clones')
+          .collection(_userNameController.text).doc(_userNameController.text).collection('clones')
           .doc(docID)
           .get()
           .then((value) => exist = value.exists);
@@ -42,111 +42,123 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
     final provider = Provider.of<UserNameProvider>(context, listen: false);
     return Consumer<UserNameProvider>(
       builder: (BuildContext context, value, Widget? child) {
-        return Container(
-          width: MediaQuery.of(context).size.width,
-          height: 400.h,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                addVerticalSpacing(30),
-                Text('Set your username',
-                    style: TextStyle(
-                        fontSize: 30.sp,
-                        fontWeight: FontWeight.bold,
-                        color: appBarColor1)),
-                addVerticalSpacing(30),
-                SizedBox(
-                  width: 300.w,
-                  child: TextField(
-                    controller: _userNameController,
-                    onChanged: (value) {
-                      userName = value;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Enter a unique username',
-                      hintStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.r),
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: 400.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    addVerticalSpacing(30),
+                    Text('Set your username',
+                        style: TextStyle(
+                            fontSize: 30.sp,
+                            fontWeight: FontWeight.bold,
+                            color: appBarColor1)),
+                    addVerticalSpacing(30),
+                    SizedBox(
+                      width: 300.w,
+                      child: TextField(
+                        controller: _userNameController,
+                        onChanged: (value) {
+                          userName = value;
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Enter a unique username',
+                          hintStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.r),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                addVerticalSpacing(15),
-                SizedBox(
-                  height: 40,
-                  width: 200,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      hasInternet =
-                          await InternetConnectionChecker().hasConnection;
-                      if (_userNameController.text.isEmpty) {
-                        Toast.show("Type in a valid name",
-                            duration: Toast.lengthShort,
-                            gravity: Toast.center,
-                            backgroundColor: Colors.amberAccent.shade700);
-                      } else if (hasInternet == false) {
-                        Toast.show("No internet connection",
-                            duration: Toast.lengthShort,
-                            gravity: Toast.center,
-                            backgroundColor: Colors.amberAccent.shade700);
-                      } else {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        bool cloneExists =
-                            await checkExist(_userNameController.text.trim());
-                        if (cloneExists) {
-                          Toast.show("Username already exists",
-                              backgroundColor: Colors.amberAccent.shade700,
-                              duration: Toast.lengthShort,
-                              gravity: Toast.center);
-                          setState(() {
-                            isLoading = false;
-                          });
-                        } else {
-                          await fireStore
-                              .collection(_userNameController.text.trim())
-                              .doc(_userNameController.text)
-                              .set({
-                            'User': _userNameController.text,
-                          });
+                    addVerticalSpacing(15),
+                    SizedBox(
+                      height: 40,
+                      width: 200,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          hasInternet =
+                              await InternetConnectionChecker().hasConnection;
+                          if (_userNameController.text.isEmpty) {
+                            Toast.show("Type in a valid name",
+                                duration: Toast.lengthShort,
+                                gravity: Toast.center,
+                                backgroundColor: Colors.amberAccent.shade700);
+                          } else if (hasInternet == false) {
+                            Toast.show("No internet connection",
+                                duration: Toast.lengthShort,
+                                gravity: Toast.center,
+                                backgroundColor: Colors.amberAccent.shade700);
+                          } else {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            bool cloneExists = await checkExist(
+                                _userNameController.text.trim());
+                            if (cloneExists) {
+                              Toast.show("Username already exists",
+                                  backgroundColor: Colors.amberAccent.shade700,
+                                  duration: Toast.lengthShort,
+                                  gravity: Toast.center);
+                              setState(() {
+                                isLoading = false;
+                              });
+                            } else {
+                              await fireStore
+                                  .collection(_userNameController.text.trim())
+                                  .doc(_userNameController.text)
+                                  .set({
+                                'User': _userNameController.text,
+                              });
+                              fireStore
+                                  .collection(_userNameController.text.trim())
+                                  .doc(_userNameController.text.trim())
+                                  .collection('clones').doc('clones').set({'clone': '${_userNameController.text}\'s clone'});
 
-                          _userNameController.clear();
-                          setState(() {
-                            isLoading = false;
-                          });
-                          Navigator.pop(context);
-                          Toast.show('Username created successfully',
-                              duration: Toast.lengthShort,
-                              backgroundColor: const Color(0xff903aff),
-                              gravity: Toast.center);
-                        }
-                      }
-                    },
-                    child: isLoading
-                        ? Row(
-                            children: [
-                              const LoadingIndicator(
-                                  indicatorType: Indicator.ballPulse,
-                                  colors: [Colors.white],
-                                  strokeWidth: 2,
-                                  backgroundColor: Colors.transparent,
-                                  pathBackgroundColor: Colors.transparent),
-                              addHorizontalSpacing(5),
-                              const Text('Please wait'),
-                            ],
-                          )
-                        : const Text('Set username'),
-                  ),
+                              _userNameController.clear();
+                              setState(() {
+                                isLoading = false;
+                              });
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => FlashChat(userName: userName,)));
+                              Toast.show('Username created successfully',
+                                  duration: Toast.lengthShort,
+                                  backgroundColor: const Color(0xff903aff),
+                                  gravity: Toast.center);
+                            }
+                          }
+                        },
+                        child: isLoading
+                            ? Row(
+                                children: [
+                                  const LoadingIndicator(
+                                      indicatorType: Indicator.ballPulse,
+                                      colors: [Colors.white],
+                                      strokeWidth: 2,
+                                      backgroundColor: Colors.transparent,
+                                      pathBackgroundColor: Colors.transparent),
+                                  addHorizontalSpacing(5),
+                                  const Text('Please wait'),
+                                ],
+                              )
+                            : const Text('Set username'),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );

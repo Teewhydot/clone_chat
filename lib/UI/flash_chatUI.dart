@@ -9,7 +9,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class FlashChat extends StatefulWidget {
-  const FlashChat({Key? key}) : super(key: key);
+ final String userName;
+
+  const FlashChat({super.key, required this.userName});
 
   @override
   State<FlashChat> createState() => _FlashChatState();
@@ -22,30 +24,45 @@ class _FlashChatState extends State<FlashChat> {
 
   List<ConversationList> displayList = List.from(conversationList);
   final fireStore = FirebaseFirestore.instance;
+  var newCloneName;
+  var newUserName;
   late Stream<QuerySnapshot> cloneStream;
   final TextEditingController searchController = TextEditingController();
-
 
   @override
   void initState() {
     super.initState();
-    cloneStream = fireStore.collection('clones').snapshots();
+    cloneStream = fireStore.collection(widget.userName).doc(widget.userName).collection('clones').snapshots();
     searchController.addListener(() {
       setState(() {});
     });
-  final binding =  WidgetsFlutterBinding.ensureInitialized();
-  binding.addPostFrameCallback((_) {
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (BuildContext context) =>
-        const CreateUserNamePage());
-  });
+    // final binding = WidgetsFlutterBinding.ensureInitialized();
+    // binding.addPostFrameCallback((_) async{
+    //   final result = await showModalBottomSheet(
+    //       context: context,
+    //       builder: (BuildContext context) => const CreateUserNamePage());
+    //   // after the SecondScreen result comes back update the Text widget with it
+    //   setState(() {
+    //     newUserName = result;
+    //   });
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     final nameProvider = Provider.of<UserNameProvider>(context);
+    void awaitCloneNameFromModalPopup(BuildContext context) async {
+      // start the SecondScreen and wait for it to finish with a result
+      final result = await showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) => const AddNewUserScreen());
+
+      // after the SecondScreen result comes back update the Text widget with it
+      setState(() {
+        newCloneName = result;
+      });
+    }
+
     Widget buildAlertDialog(BuildContext context) {
       return AlertDialog(
         title: const Text('FYI'),
@@ -79,9 +96,7 @@ class _FlashChatState extends State<FlashChat> {
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add_circle_outlined),
           onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) => const AddNewUserScreen());
+            awaitCloneNameFromModalPopup(context);
           }),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -144,7 +159,7 @@ class _FlashChatState extends State<FlashChat> {
                         snapshot.data!.docs.map((DocumentSnapshot document) {
                       Map<String, dynamic> data =
                           document.data()! as Map<String, dynamic>;
-                      return ConversationList(data['cloneName']);
+                      return ConversationList(data['clone']);
                     }).toList(),
                   );
                 }),

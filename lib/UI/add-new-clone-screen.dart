@@ -135,7 +135,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                         setState(() {
                           isLoading = false;
                         });
-                        nav.pop();
+                        nav.pop(cloneNameController.text);
                         Toast.show('Clone created successfully',
                             duration: Toast.lengthShort,
                             backgroundColor: const Color(0xff903aff),
