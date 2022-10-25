@@ -103,7 +103,7 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
                         bool cloneExists =
                             await checkExist(_userNameController.text.trim());
                         if (cloneExists) {
-                          Toast.show("Clone already exists",
+                          Toast.show("Username already exists",
                               backgroundColor: Colors.amberAccent.shade700,
                               duration: Toast.lengthShort,
                               gravity: Toast.center);
@@ -112,19 +112,18 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
                           });
                         } else {
                           await fireStore
-                              .collection('clones')
+                              .collection(_userNameController.text.trim())
                               .doc(_userNameController.text)
                               .set({
-                            'cloneName': _userNameController.text,
+                            'User': _userNameController.text,
                           });
-                          addCloneToFirebase(_userNameController.text);
 
                           _userNameController.clear();
                           setState(() {
                             isLoading = false;
                           });
                           Navigator.pop(context);
-                          Toast.show('Clone created successfully',
+                          Toast.show('Username created successfully',
                               duration: Toast.lengthShort,
                               backgroundColor: const Color(0xff903aff),
                               gravity: Toast.center);

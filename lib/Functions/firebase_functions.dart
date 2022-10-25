@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Models/chat_model.dart';
+import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 Future<void> addMessageToFirebase(String message, BuildContext context) async {
   final fireStore = FirebaseFirestore.instance;
   final chatProviderListen = Provider.of<ChatProvider>(context);
+
   String getUserStatus() {
     if (chatProviderListen.isClone) {
       return "receiver";
@@ -21,9 +23,10 @@ Future<void> addMessageToFirebase(String message, BuildContext context) async {
   });
 }
 
-Future<void> deleteClone(String cloneName) {
+Future<void> deleteClone(String cloneName,BuildContext context) {
+  final nameProvider = Provider.of<UserNameProvider>(context);
   final fireStore = FirebaseFirestore.instance;
-  return fireStore.collection('clones').doc(cloneName).delete();
+  return fireStore.collection(nameProvider.name).doc(cloneName).delete();
 }
 
 Future<void> addCloneToFirebase(String cloneName) async {

@@ -1,9 +1,11 @@
 import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/constants.dart';
+import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -19,18 +21,18 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
   @override
   Widget build(BuildContext context) {
     bool hasInternet;
-
+    final provider = Provider.of<UserNameProvider>(context);
     final nav = Navigator.of(context);
     final fireStore = FirebaseFirestore.instance;
     ToastContext().init(context);
     final TextEditingController cloneNameController = TextEditingController();
 
-    Future<bool> checkExist(String docID) async {
+    Future<bool> checkExist(String documentID) async {
       bool exist = false;
-
+//checks if the clone name already exists, returns true if yes and false if no.
       await fireStore
-          .collection('clones')
-          .doc(docID)
+          .collection(provider.name)
+          .doc(documentID)
           .get()
           .then((value) => exist = value.exists);
       return exist;
@@ -120,7 +122,9 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                         });
                       } else {
                         await fireStore
-                            .collection('clones')
+                            .collection(provider.name)
+                            .doc(provider.name)
+                            .collection(cloneNameController.text)
                             .doc(cloneNameController.text)
                             .set({
                           'cloneName': cloneNameController.text,

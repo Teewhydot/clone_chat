@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/constants.dart';
@@ -61,7 +63,7 @@ class ConversationListState extends State<ConversationList> {
                   hasInternet = await InternetConnectionChecker().hasConnection;
                   if (hasInternet) {
                    deleteProvider.setSpinning(true);
-                    await deleteClone(widget.name);
+                    await deleteClone(widget.name,context);
                     nav.pop();
                     Toast.show("Clone deleted",
                         duration: Toast.lengthShort,

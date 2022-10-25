@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Models/conversationListUi.dart';
 import 'package:flash_chat/Models/constants.dart';
-import 'package:flash_chat/UI/add-new-user-screen.dart';
+import 'package:flash_chat/UI/add-new-clone-screen.dart';
 import 'package:flash_chat/UI/create_username.dart';
+import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class FlashChat extends StatefulWidget {
   const FlashChat({Key? key}) : super(key: key);
@@ -22,6 +24,7 @@ class _FlashChatState extends State<FlashChat> {
   final fireStore = FirebaseFirestore.instance;
   late Stream<QuerySnapshot> cloneStream;
   final TextEditingController searchController = TextEditingController();
+
 
   @override
   void initState() {
@@ -42,6 +45,7 @@ class _FlashChatState extends State<FlashChat> {
 
   @override
   Widget build(BuildContext context) {
+    final nameProvider = Provider.of<UserNameProvider>(context);
     Widget buildAlertDialog(BuildContext context) {
       return AlertDialog(
         title: const Text('FYI'),
