@@ -14,9 +14,10 @@ import 'package:toast/toast.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
 
 class ConversationList extends StatefulWidget {
-  final String name;
+  final String cloneNameFromFirestore;
+  final String userName;
 
-  const ConversationList(this.name, {Key? key}) : super(key: key);
+  const ConversationList(this.cloneNameFromFirestore, this.userName, {super.key});
   @override
   ConversationListState createState() => ConversationListState();
 }
@@ -63,7 +64,7 @@ class ConversationListState extends State<ConversationList> {
                   hasInternet = await InternetConnectionChecker().hasConnection;
                   if (hasInternet) {
                    deleteProvider.setSpinning(true);
-                    await deleteClone(widget.name,context);
+                    await deleteClone(widget.cloneNameFromFirestore,context);
                     nav.pop();
                     Toast.show("Clone deleted",
                         duration: Toast.lengthShort,
@@ -89,7 +90,7 @@ class ConversationListState extends State<ConversationList> {
       },
       onTap: () {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ChatScreen(widget.name)));
+            MaterialPageRoute(builder: (context) => ChatScreen(widget.cloneNameFromFirestore, widget.userName)));
       },
       child: Card(
         child: Padding(
@@ -110,7 +111,7 @@ class ConversationListState extends State<ConversationList> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              widget.name,
+                              widget.cloneNameFromFirestore,
                               style: TextStyle(fontSize: 16.sp),
                             ),
                           ],

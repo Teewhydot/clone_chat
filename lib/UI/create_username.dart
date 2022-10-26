@@ -113,18 +113,13 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
                               setState(() {
                                 isLoading = false;
                               });
-                            } else {
+                            } else {provider.setName(_userNameController.text.trim());
                               await fireStore
                                   .collection(_userNameController.text.trim())
                                   .doc(_userNameController.text)
                                   .set({
                                 'User': _userNameController.text,
                               });
-                              fireStore
-                                  .collection(_userNameController.text.trim())
-                                  .doc(_userNameController.text.trim())
-                                  .collection('clones').doc('clones').set({'clone': '${_userNameController.text}\'s clone'});
-
                               _userNameController.clear();
                               setState(() {
                                 isLoading = false;

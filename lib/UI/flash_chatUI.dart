@@ -1,12 +1,14 @@
+
+// ignore_for_file: prefer_typing_uninitialized_variables, file_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Models/conversationListUi.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/UI/add-new-clone-screen.dart';
-import 'package:flash_chat/UI/create_username.dart';
-import 'package:flash_chat/providers/user_name_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
+
 
 class FlashChat extends StatefulWidget {
  final String userName;
@@ -24,6 +26,7 @@ class _FlashChatState extends State<FlashChat> {
 
   List<ConversationList> displayList = List.from(conversationList);
   final fireStore = FirebaseFirestore.instance;
+
   var newCloneName;
   var newUserName;
   late Stream<QuerySnapshot> cloneStream;
@@ -32,10 +35,15 @@ class _FlashChatState extends State<FlashChat> {
   @override
   void initState() {
     super.initState();
-    cloneStream = fireStore.collection(widget.userName).doc(widget.userName).collection('clones').snapshots();
-    searchController.addListener(() {
-      setState(() {});
-    });
+    cloneStream = fireStore
+        .collection(widget.userName)
+        .doc(widget.userName)
+        .collection('clones')
+        .snapshots();
+
+    // show modal bottom sheet soon as page loads
+
+
     // final binding = WidgetsFlutterBinding.ensureInitialized();
     // binding.addPostFrameCallback((_) async{
     //   final result = await showModalBottomSheet(
@@ -50,7 +58,6 @@ class _FlashChatState extends State<FlashChat> {
 
   @override
   Widget build(BuildContext context) {
-    final nameProvider = Provider.of<UserNameProvider>(context);
     void awaitCloneNameFromModalPopup(BuildContext context) async {
       // start the SecondScreen and wait for it to finish with a result
       final result = await showModalBottomSheet(
@@ -159,7 +166,7 @@ class _FlashChatState extends State<FlashChat> {
                         snapshot.data!.docs.map((DocumentSnapshot document) {
                       Map<String, dynamic> data =
                           document.data()! as Map<String, dynamic>;
-                      return ConversationList(data['clone']);
+                      return ConversationList(data['cloneName'],widget.userName);
                     }).toList(),
                   );
                 }),

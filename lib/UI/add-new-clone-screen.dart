@@ -1,4 +1,3 @@
-import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
@@ -121,16 +120,28 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                           isLoading = false;
                         });
                       } else {
+
                         await fireStore
                             .collection(provider.name)
                             .doc(provider.name)
-                            .collection(cloneNameController.text)
+                            .collection('clones')
                             .doc(cloneNameController.text)
                             .set({
                           'cloneName': cloneNameController.text,
                         });
-                        addCloneToFirebase(cloneNameController.text);
 
+                        await fireStore
+                            .collection(provider.name)
+                            .doc(provider.name)
+                            .collection('clones')
+                            .doc(cloneNameController.text)
+                            .collection('chats')
+                            .add({
+                          'messageText':
+                          'Hello, I am your new clone ${cloneNameController.text}, Tap the switch on the top right corner of your screen to switch places with me.',
+                          'whoSent': 'receiver',
+                          'time': DateTime.now(),
+                        });
                         cloneNameController.clear();
                         setState(() {
                           isLoading = false;

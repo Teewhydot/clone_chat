@@ -4,9 +4,10 @@ import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-Future<void> addMessageToFirebase(String message, BuildContext context) async {
+Future<void> addMessageToFirebase(String message, BuildContext context,String cloneName) async {
   final fireStore = FirebaseFirestore.instance;
   final chatProviderListen = Provider.of<ChatProvider>(context);
+  final provider = Provider.of<UserNameProvider>(context);
 
   String getUserStatus() {
     if (chatProviderListen.isClone) {
@@ -15,8 +16,20 @@ Future<void> addMessageToFirebase(String message, BuildContext context) async {
       return "sender";
     }
   }
+  //
+  // await fireStore.collection('clones').doc(message).collection('chats').add({
+  //   'messageText': message,
+  //   'whoSent': getUserStatus(),
+  //   'time': DateTime.now(),
+  // });
 
-  await fireStore.collection('clones').doc(message).collection('chats').add({
+
+  await fireStore
+      .collection(provider.name)
+      .doc(provider.name)
+      .collection('clones')
+      .doc(cloneName)
+      .collection('chats').add({
     'messageText': message,
     'whoSent': getUserStatus(),
     'time': DateTime.now(),
@@ -26,12 +39,13 @@ Future<void> addMessageToFirebase(String message, BuildContext context) async {
 Future<void> deleteClone(String cloneName,BuildContext context) {
   final nameProvider = Provider.of<UserNameProvider>(context);
   final fireStore = FirebaseFirestore.instance;
-  return fireStore.collection(nameProvider.name).doc(cloneName).delete();
+  return fireStore.collection(nameProvider.name).doc(nameProvider.name).collection('clones').doc(cloneName).delete();
 }
 
 Future<void> addCloneToFirebase(String cloneName) async {
   final fireStore = FirebaseFirestore.instance;
-  await fireStore
+
+  await fireStore.collection('provider.name').doc('provider.name')
       .collection('clones')
       .doc(cloneName)
       .collection('chats')

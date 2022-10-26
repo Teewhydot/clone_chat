@@ -4,16 +4,19 @@ import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/chat_model.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
+import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatScreen extends StatefulWidget {
   final String cloneName;
-  const ChatScreen(this.cloneName, {Key? key}) : super(key: key);
+  final String userName;
+  const ChatScreen(this.cloneName,this.userName, {super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -21,6 +24,18 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   late Stream<QuerySnapshot> chatStream;
+  bool isSending = false;
+  void startSpinning() {
+    setState(() {
+      isSending = true;
+    });
+  }
+  void stopSpinning() {
+    setState(() {
+      isSending = false;
+    });
+  }
+
   final fireStore = FirebaseFirestore.instance;
   final TextEditingController chatController = TextEditingController();
 
@@ -28,6 +43,8 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     chatStream = fireStore
+        .collection(widget.userName)
+        .doc(widget.userName)
         .collection('clones')
         .doc(widget.cloneName)
         .collection('chats')
@@ -37,7 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-
+    final provider = Provider.of<UserNameProvider>(context);
     bool hasInternet;
     ToastContext().init(context);
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
@@ -164,13 +181,24 @@ class _ChatScreenState extends State<ChatScreen> {
                                           gravity: Toast.center,
                                           backgroundColor: Colors.red);
                                     } else {
-                                      addMessageToFirebase(chatController.text, context);
+                                      startSpinning();
+                                      addMessageToFirebase(chatController.text, context,widget.cloneName);
                                       chatController.clear();
+                                      stopSpinning();
                                     }
                                   },
-                                  child: const CircleAvatar(
-                                      backgroundColor: Color(0xff3e2452),
-                                      child: Icon(Icons.arrow_forward_ios))),
+                                  child: CircleAvatar(
+                                      backgroundColor: appBarColor1,
+                                      child: isSending ? const SizedBox(
+                                        height: 25,
+                                        width: 25 ,
+                                        child: LoadingIndicator(
+                                            indicatorType: Indicator.semiCircleSpin,
+                                            colors: [Colors.white],
+                                            strokeWidth: 2,
+                                            backgroundColor: Colors.transparent,
+                                            pathBackgroundColor: Colors.transparent),
+                                      ): const Icon(Icons.arrow_forward_ios))),
                             ),
                             border: OutlineInputBorder(
                               borderSide: const BorderSide(
