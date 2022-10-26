@@ -37,8 +37,6 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
           .then((value) => exist = value.exists);
       return exist;
     }
-
-    final providerListen = Provider.of<UserNameProvider>(context);
     final provider = Provider.of<UserNameProvider>(context, listen: false);
     return Consumer<UserNameProvider>(
       builder: (BuildContext context, value, Widget? child) {
@@ -144,7 +142,7 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
                                       strokeWidth: 2,
                                       backgroundColor: Colors.transparent,
                                       pathBackgroundColor: Colors.transparent),
-                                  addHorizontalSpacing(5),
+                                  addHorizontalSpacing(10),
                                   const Text('Please wait'),
                                 ],
                               )

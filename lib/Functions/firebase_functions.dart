@@ -16,14 +16,6 @@ Future<void> addMessageToFirebase(String message, BuildContext context,String cl
       return "sender";
     }
   }
-  //
-  // await fireStore.collection('clones').doc(message).collection('chats').add({
-  //   'messageText': message,
-  //   'whoSent': getUserStatus(),
-  //   'time': DateTime.now(),
-  // });
-
-
   await fireStore
       .collection(provider.name)
       .doc(provider.name)

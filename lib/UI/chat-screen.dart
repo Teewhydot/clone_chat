@@ -4,7 +4,7 @@ import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/chat_model.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
-import 'package:flash_chat/providers/user_name_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -54,7 +54,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<UserNameProvider>(context);
     bool hasInternet;
     ToastContext().init(context);
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);

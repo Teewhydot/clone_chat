@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, file_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Functions/firebase_functions.dart';
@@ -11,7 +11,11 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-import 'package:flash_chat/Reusables/palettes.dart';
+
+
+
+
+
 
 class ConversationList extends StatefulWidget {
   final String cloneNameFromFirestore;
@@ -29,8 +33,8 @@ class ConversationListState extends State<ConversationList> {
 
     ToastContext().init(context);
     Widget buildAlertDialog(BuildContext context) {
-      final deleteProvider = Provider.of<DeleteCloneProvider>(context,listen: false);
-      final isSpinningProvider =Provider.of<DeleteCloneProvider>(context);
+      final provider = Provider.of<DeleteCloneProvider>(context);
+      final providerA = Provider.of<DeleteCloneProvider>(context,listen: false);
       final nav = Navigator.of(context);
       bool hasInternet;
       return AlertDialog(
@@ -43,7 +47,7 @@ class ConversationListState extends State<ConversationList> {
             height: 25.h,
             child: ElevatedButton(
               onPressed: () async {
-                Navigator.pop(context);
+                nav.pop();
               },
               child: const Text('NO'),
             ),
@@ -52,7 +56,7 @@ class ConversationListState extends State<ConversationList> {
             width: 75.w,
             height: 25.h,
             child: ElevatedButton(
-                child: isSpinningProvider.spinning
+                child: provider.spinning
                     ? const LoadingIndicator(
                         indicatorType: Indicator.ballPulse,
                         colors: [Colors.white],
@@ -63,16 +67,15 @@ class ConversationListState extends State<ConversationList> {
                 onPressed: () async {
                   hasInternet = await InternetConnectionChecker().hasConnection;
                   if (hasInternet) {
-                   deleteProvider.setSpinning(true);
+                    providerA.setSpinning(true);
                     await deleteClone(widget.cloneNameFromFirestore,context);
                     nav.pop();
                     Toast.show("Clone deleted",
                         duration: Toast.lengthShort,
                         gravity: Toast.center,
                         backgroundColor: Colors.amberAccent.shade700);
-                   deleteProvider.setSpinning(false);
+                   providerA.setSpinning(false);
                   } else {
-                    deleteProvider.setSpinning(false);
                     Toast.show("No internet connection",
                         duration: Toast.lengthShort,
                         gravity: Toast.center,

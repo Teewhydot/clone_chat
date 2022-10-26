@@ -163,7 +163,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                                 strokeWidth: 2,
                                 backgroundColor: Colors.transparent,
                                 pathBackgroundColor: Colors.transparent),
-                            addHorizontalSpacing(5),
+                            addHorizontalSpacing(10),
                             const Text('Please wait'),
                           ],
                         )

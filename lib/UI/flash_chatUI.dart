@@ -2,7 +2,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, file_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flash_chat/Models/conversationListUi.dart';
+import 'package:flash_chat/Models/conversation_list_ui.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/UI/add-new-clone-screen.dart';
 
