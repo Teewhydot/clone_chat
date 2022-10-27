@@ -18,9 +18,10 @@ dependencies:
   firebase_core: ^1.22.0
   cloud_firestore: ^3.4.7
   internet_connection_checker: ^0.0.1+4
-  progress_indicator_button: ^0.0.3
   rename: ^2.0.1
   loading_indicator: ^3.1.0
+  intl: ^0.17.0
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

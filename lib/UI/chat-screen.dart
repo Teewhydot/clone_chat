@@ -16,7 +16,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ChatScreen extends StatefulWidget {
   final String cloneName;
   final String userName;
-  const ChatScreen(this.cloneName,this.userName, {super.key});
+  const ChatScreen(this.cloneName, this.userName, {super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -30,6 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
       isSending = true;
     });
   }
+
   void stopSpinning() {
     setState(() {
       isSending = false;
@@ -58,7 +59,6 @@ class _ChatScreenState extends State<ChatScreen> {
     ToastContext().init(context);
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     final chatProviderListen = Provider.of<ChatProvider>(context);
-
 
     return GestureDetector(
       onTap: () {
@@ -114,7 +114,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ? Alignment.topLeft
                               : Alignment.topRight,
                           child: Padding(
-                            padding:  EdgeInsets.all(8.0.r),
+                            padding: EdgeInsets.all(8.0.r),
                             child: Container(
                                 decoration: BoxDecoration(
                                     color: data['whoSent'] == "receiver"
@@ -123,7 +123,21 @@ class _ChatScreenState extends State<ChatScreen> {
                                     borderRadius: BorderRadius.circular(10.r)),
                                 child: Padding(
                                   padding: EdgeInsets.all(10.0.r),
-                                  child: Text(data['messageText'],style:  kWhiteTextStyle,),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        data['whoSent'] == 'receiver'
+                                            ? widget.cloneName
+                                            : widget.userName,
+                                        style: kWhiteTextStyle,
+                                      ),
+                                      addVerticalSpacing(5),
+                                      Text(
+                                        data['messageText'],
+                                        style: kWhiteTextStyle,
+                                      ),
+                                    ],
+                                  ),
                                 )),
                           ),
                         );
@@ -181,23 +195,32 @@ class _ChatScreenState extends State<ChatScreen> {
                                           backgroundColor: Colors.red);
                                     } else {
                                       startSpinning();
-                                      addMessageToFirebase(chatController.text, context,widget.cloneName);
+                                      await addMessageToFirebase(
+                                          chatController.text,
+                                          context,
+                                          widget.cloneName);
                                       chatController.clear();
                                       stopSpinning();
                                     }
                                   },
                                   child: CircleAvatar(
                                       backgroundColor: appBarColor1,
-                                      child: isSending ? const SizedBox(
-                                        height: 25,
-                                        width: 25 ,
-                                        child: LoadingIndicator(
-                                            indicatorType: Indicator.semiCircleSpin,
-                                            colors: [Colors.white],
-                                            strokeWidth: 2,
-                                            backgroundColor: Colors.transparent,
-                                            pathBackgroundColor: Colors.transparent),
-                                      ): const Icon(Icons.arrow_forward_ios))),
+                                      child: isSending
+                                          ? const SizedBox(
+                                              height: 25,
+                                              width: 25,
+                                              child: LoadingIndicator(
+                                                  indicatorType:
+                                                      Indicator.semiCircleSpin,
+                                                  colors: [Colors.white],
+                                                  strokeWidth: 2,
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  pathBackgroundColor:
+                                                      Colors.transparent),
+                                            )
+                                          : const Icon(
+                                              Icons.arrow_forward_ios))),
                             ),
                             border: OutlineInputBorder(
                               borderSide: const BorderSide(
@@ -205,7 +228,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               borderRadius: BorderRadius.circular(25),
                             ),
                             hintText: 'Type Something...',
-                            contentPadding:EdgeInsets.symmetric(
+                            contentPadding: EdgeInsets.symmetric(
                                 vertical: 10.0.h, horizontal: 20.0.w),
                           ),
                         ),

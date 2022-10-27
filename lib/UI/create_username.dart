@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 class CreateUserNamePage extends StatefulWidget {
@@ -21,12 +22,19 @@ class CreateUserNamePage extends StatefulWidget {
 
 class _CreateUserNamePageState extends State<CreateUserNamePage> {
   final fireStore = FirebaseFirestore.instance;
+
   final TextEditingController _userNameController = TextEditingController();
   String userName = '';
   bool isLoading = false;
+  Future<void> saveUserName()async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString('userName', userName);
+  }
   @override
   Widget build(BuildContext context) {
     bool hasInternet;
+    ToastContext().init(context);
+
 
     Future<bool> checkExist(String docID) async {
       bool exist = false;
@@ -111,7 +119,9 @@ class _CreateUserNamePageState extends State<CreateUserNamePage> {
                               setState(() {
                                 isLoading = false;
                               });
-                            } else {provider.setName(_userNameController.text.trim());
+                            } else {
+                              await saveUserName();
+                              provider.setName(_userNameController.text.trim());
                               await fireStore
                                   .collection(_userNameController.text.trim())
                                   .doc(_userNameController.text)

@@ -33,7 +33,7 @@ class ConversationListState extends State<ConversationList> {
 
     ToastContext().init(context);
     Widget buildAlertDialog(BuildContext context) {
-      final provider = Provider.of<DeleteCloneProvider>(context);
+      final provider = Provider.of<DeleteCloneProvider>(context,listen: false);
       final providerA = Provider.of<DeleteCloneProvider>(context,listen: false);
       final nav = Navigator.of(context);
       bool hasInternet;
@@ -67,7 +67,7 @@ class ConversationListState extends State<ConversationList> {
                 onPressed: () async {
                   hasInternet = await InternetConnectionChecker().hasConnection;
                   if (hasInternet) {
-                    providerA.setSpinning(true);
+                    provider.setSpinning(true);
                     await deleteClone(widget.cloneNameFromFirestore,context);
                     nav.pop();
                     Toast.show("Clone deleted",
