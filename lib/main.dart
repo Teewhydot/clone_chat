@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  final userNameFromStorage = sharedPreferences.getString('userName') ?? false;
+  final userNameFromStorage = sharedPreferences.getString('userName') ?? '';
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
   );

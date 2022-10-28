@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Models/chat_model.dart';
 import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 Future<void> addMessageToFirebase(String message, BuildContext context,String cloneName) async {

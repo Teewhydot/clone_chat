@@ -27,7 +27,7 @@ class _FlashChatState extends State<FlashChat> {
   List<ConversationList> displayList = List.from(conversationList);
   final fireStore = FirebaseFirestore.instance;
 
-  var newCloneName;
+  Color? newCloneColor;
   var newUserName;
   late Stream<QuerySnapshot> cloneStream;
   final TextEditingController searchController = TextEditingController();
@@ -40,20 +40,6 @@ class _FlashChatState extends State<FlashChat> {
         .doc(widget.userName)
         .collection('clones')
         .snapshots();
-
-    // show modal bottom sheet soon as page loads
-
-
-    // final binding = WidgetsFlutterBinding.ensureInitialized();
-    // binding.addPostFrameCallback((_) async{
-    //   final result = await showModalBottomSheet(
-    //       context: context,
-    //       builder: (BuildContext context) => const CreateUserNamePage());
-    //   // after the SecondScreen result comes back update the Text widget with it
-    //   setState(() {
-    //     newUserName = result;
-    //   });
-    // });
   }
 
   @override
@@ -62,11 +48,11 @@ class _FlashChatState extends State<FlashChat> {
       // start the SecondScreen and wait for it to finish with a result
       final result = await showModalBottomSheet(
           context: context,
-          builder: (BuildContext context) => const AddNewUserScreen());
+          builder: (BuildContext context) => const AddNewUserClone());
 
       // after the SecondScreen result comes back update the Text widget with it
       setState(() {
-        newCloneName = result;
+        newCloneColor = result;
       });
     }
 
@@ -166,7 +152,7 @@ class _FlashChatState extends State<FlashChat> {
                         snapshot.data!.docs.map((DocumentSnapshot document) {
                       Map<String, dynamic> data =
                           document.data()! as Map<String, dynamic>;
-                      return ConversationList(data['cloneName'],widget.userName);
+                      return ConversationList(data['cloneName'],widget.userName,newCloneColor);
                     }).toList(),
                   );
                 }),

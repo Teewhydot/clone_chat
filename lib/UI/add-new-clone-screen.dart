@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
@@ -8,14 +10,14 @@ import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddNewUserScreen extends StatefulWidget {
-  const AddNewUserScreen({Key? key}) : super(key: key);
+class AddNewUserClone extends StatefulWidget {
+  const AddNewUserClone({Key? key}) : super(key: key);
 
   @override
-  State<AddNewUserScreen> createState() => _AddNewUserScreenState();
+  State<AddNewUserClone> createState() => _AddNewUserCloneState();
 }
 
-class _AddNewUserScreenState extends State<AddNewUserScreen> {
+class _AddNewUserCloneState extends State<AddNewUserClone> {
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,31 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
     final fireStore = FirebaseFirestore.instance;
     ToastContext().init(context);
     final TextEditingController cloneNameController = TextEditingController();
+    List<Color> colors = [
+      Colors.red,
+      Colors.blue,
+      Colors.green,
+      Colors.yellow,
+      Colors.purple,
+      Colors.orange,
+      Colors.pink,
+      Colors.teal,
+      Colors.indigo,
+      Colors.brown,
+      Colors.lime,
+      Colors.amber,
+      Colors.deepOrange,
+      Colors.deepPurple,
+      Colors.lightBlue,
+      Colors.lightGreen,
+      Colors.grey,
+    ];
+
+    Color getRandomColor(){
+      Random random = Random();
+      int index = random.nextInt(colors.length);
+      return colors[index];
+    }
 
     Future<bool> checkExist(String documentID) async {
       bool exist = false;
@@ -146,7 +173,9 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                         setState(() {
                           isLoading = false;
                         });
-                        nav.pop(cloneNameController.text);
+                        //call the function to return a random color for the circle avatar of the newly created clone
+                        final Color color = getRandomColor();
+                        nav.pop(color);
                         Toast.show('Clone created successfully',
                             duration: Toast.lengthShort,
                             backgroundColor: const Color(0xff903aff),

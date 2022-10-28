@@ -20,8 +20,9 @@ import 'package:toast/toast.dart';
 class ConversationList extends StatefulWidget {
   final String cloneNameFromFirestore;
   final String userName;
+  final Color? cloneAvatarColor;
 
-  const ConversationList(this.cloneNameFromFirestore, this.userName, {super.key});
+  const ConversationList(this.cloneNameFromFirestore, this.userName, this.cloneAvatarColor ,{super.key});
   @override
   ConversationListState createState() => ConversationListState();
 }
@@ -104,6 +105,7 @@ class ConversationListState extends State<ConversationList> {
                 child: Row(
                   children: <Widget>[
                     CircleAvatar(
+                       foregroundColor: widget.cloneAvatarColor,
                       maxRadius: 30.r,
                     ),
                     addHorizontalSpacing(15),
