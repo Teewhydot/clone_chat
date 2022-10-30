@@ -1,5 +1,6 @@
-import 'dart:math';
+// ignore_for_file: use_build_context_synchronously
 
+import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
@@ -27,42 +28,7 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
     final fireStore = FirebaseFirestore.instance;
     ToastContext().init(context);
     final TextEditingController cloneNameController = TextEditingController();
-    List<Color> colors = [
-      Colors.red,
-      Colors.blue,
-      Colors.green,
-      Colors.yellow,
-      Colors.purple,
-      Colors.orange,
-      Colors.pink,
-      Colors.teal,
-      Colors.indigo,
-      Colors.brown,
-      Colors.lime,
-      Colors.amber,
-      Colors.deepOrange,
-      Colors.deepPurple,
-      Colors.lightBlue,
-      Colors.lightGreen,
-      Colors.grey,
-    ];
 
-    Color getRandomColor(){
-      Random random = Random();
-      int index = random.nextInt(colors.length);
-      return colors[index];
-    }
-
-    Future<bool> checkExist(String documentID) async {
-      bool exist = false;
-//checks if the clone name already exists, returns true if yes and false if no.
-      await fireStore
-          .collection(provider.name)
-          .doc(documentID)
-          .get()
-          .then((value) => exist = value.exists);
-      return exist;
-    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -120,6 +86,9 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
                 height: 30.h,
                 child: ElevatedButton(
                   onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
                     hasInternet =
                         await InternetConnectionChecker().hasConnection;
                     if (cloneNameController.text.isEmpty) {
@@ -127,17 +96,20 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
                           duration: Toast.lengthShort,
                           gravity: Toast.center,
                           backgroundColor: Colors.amberAccent.shade700);
+                      setState(() {
+                        isLoading = false;
+                      });
                     } else if (hasInternet == false) {
                       Toast.show("No internet connection",
                           duration: Toast.lengthShort,
                           gravity: Toast.center,
                           backgroundColor: Colors.amberAccent.shade700);
-                    } else {
                       setState(() {
-                        isLoading = true;
+                        isLoading = false;
                       });
+                    } else {
                       bool cloneExists =
-                          await checkExist(cloneNameController.text.trim());
+                          await checkExist(cloneNameController.text.trim(),context);
                       if (cloneExists) {
                         Toast.show("Clone already exists",
                             backgroundColor: Colors.amberAccent.shade700,
@@ -147,7 +119,6 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
                           isLoading = false;
                         });
                       } else {
-
                         await fireStore
                             .collection(provider.name)
                             .doc(provider.name)
@@ -165,7 +136,7 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
                             .collection('chats')
                             .add({
                           'messageText':
-                          'Hello, I am your new clone ${cloneNameController.text}, Tap the switch on the top right corner of your screen to switch places with me.',
+                              'Hello, I am your new clone ${cloneNameController.text}, Tap the switch on the top right corner of your screen to switch places with me.',
                           'whoSent': 'receiver',
                           'time': DateTime.now(),
                         });
@@ -174,8 +145,7 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
                           isLoading = false;
                         });
                         //call the function to return a random color for the circle avatar of the newly created clone
-                        final Color color = getRandomColor();
-                        nav.pop(color);
+                        nav.pop();
                         Toast.show('Clone created successfully',
                             duration: Toast.lengthShort,
                             backgroundColor: const Color(0xff903aff),

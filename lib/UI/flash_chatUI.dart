@@ -79,7 +79,7 @@ class _FlashChatState extends State<FlashChat> {
                   },
                   child: const Text(
                     'OK',
-                    style: TextStyle(color: Colors.blue),
+                    style: TextStyle(color: Colors.white),
                   )))
         ],
       );
@@ -105,7 +105,7 @@ class _FlashChatState extends State<FlashChat> {
         ),
         centerTitle: true,
         elevation: 0,
-        title: const Text('Clone-Chat'),
+        title:  Text(widget.userName),
       ),
       body: Column(
         children: [
@@ -144,7 +144,9 @@ class _FlashChatState extends State<FlashChat> {
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(
+                        color: Colors.purple,
+                      ),
                     );
                   }
                   return ListView(
