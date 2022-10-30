@@ -180,6 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               padding: EdgeInsets.all(8.0.r),
                               child: GestureDetector(
                                   onTap: () async {
+                                    startSpinning();
                                     hasInternet =
                                         await InternetConnectionChecker()
                                             .hasConnection;
@@ -188,13 +189,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                           duration: Toast.lengthShort,
                                           gravity: Toast.center,
                                           backgroundColor: Colors.red);
+                                      stopSpinning();
                                     } else if (hasInternet == false) {
                                       Toast.show("No internet connection",
                                           duration: Toast.lengthShort,
                                           gravity: Toast.center,
                                           backgroundColor: Colors.red);
+                                      stopSpinning();
                                     } else {
-                                      startSpinning();
                                       await addMessageToFirebase(
                                           chatController.text,
                                           context,

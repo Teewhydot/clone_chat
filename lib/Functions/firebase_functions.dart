@@ -36,19 +36,30 @@ Future<void> deleteClone(String cloneName,BuildContext context) {
   return fireStore.collection(nameProvider.name).doc(nameProvider.name).collection('clones').doc(cloneName).delete();
 }
 
-Future<void> addCloneToFirebase(String cloneName) async {
+Future<void> addCloneToFirebase(String cloneName,BuildContext context) async {
   final fireStore = FirebaseFirestore.instance;
+  final provider = Provider.of<UserNameProvider>(context,listen: false);
+  await fireStore
+      .collection(provider.name)
+      .doc(provider.name)
+      .collection('clones')
+      .doc(cloneName)
+      .set({
+    'cloneName': cloneName,
+  });
 
-  await fireStore.collection('provider.name').doc('provider.name')
+  await fireStore
+      .collection(provider.name)
+      .doc(provider.name)
       .collection('clones')
       .doc(cloneName)
       .collection('chats')
       .add({
-        'messageText':
-            'Hello, I am your new clone $cloneName, Tap the switch on the top right corner of your screen to switch places with me.',
-        'whoSent': 'receiver',
-        'time': DateTime.now(),
-      });
+    'messageText':
+    'Hello, I am your new clone ${cloneName}, Tap the switch on the top right corner of your screen to switch places with me.',
+    'whoSent': 'receiver',
+    'time': DateTime.now(),
+  });
 }
 
 Future<bool> checkExist(String cloneId,BuildContext context) async {

@@ -2,14 +2,14 @@
 
 import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Models/constants.dart';
-import 'package:flash_chat/providers/user_name_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:provider/provider.dart';
+
 import 'package:toast/toast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class AddNewUserClone extends StatefulWidget {
   const AddNewUserClone({Key? key}) : super(key: key);
@@ -23,12 +23,9 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
   @override
   Widget build(BuildContext context) {
     bool hasInternet;
-    final provider = Provider.of<UserNameProvider>(context);
     final nav = Navigator.of(context);
-    final fireStore = FirebaseFirestore.instance;
     ToastContext().init(context);
     final TextEditingController cloneNameController = TextEditingController();
-
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -108,8 +105,8 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
                         isLoading = false;
                       });
                     } else {
-                      bool cloneExists =
-                          await checkExist(cloneNameController.text.trim(),context);
+                      bool cloneExists = await checkExist(
+                          cloneNameController.text.trim(), context);
                       if (cloneExists) {
                         Toast.show("Clone already exists",
                             backgroundColor: Colors.amberAccent.shade700,
@@ -119,32 +116,11 @@ class _AddNewUserCloneState extends State<AddNewUserClone> {
                           isLoading = false;
                         });
                       } else {
-                        await fireStore
-                            .collection(provider.name)
-                            .doc(provider.name)
-                            .collection('clones')
-                            .doc(cloneNameController.text)
-                            .set({
-                          'cloneName': cloneNameController.text,
-                        });
-
-                        await fireStore
-                            .collection(provider.name)
-                            .doc(provider.name)
-                            .collection('clones')
-                            .doc(cloneNameController.text)
-                            .collection('chats')
-                            .add({
-                          'messageText':
-                              'Hello, I am your new clone ${cloneNameController.text}, Tap the switch on the top right corner of your screen to switch places with me.',
-                          'whoSent': 'receiver',
-                          'time': DateTime.now(),
-                        });
+                        addCloneToFirebase(cloneNameController.text, context);
                         cloneNameController.clear();
                         setState(() {
                           isLoading = false;
                         });
-                        //call the function to return a random color for the circle avatar of the newly created clone
                         nav.pop();
                         Toast.show('Clone created successfully',
                             duration: Toast.lengthShort,
