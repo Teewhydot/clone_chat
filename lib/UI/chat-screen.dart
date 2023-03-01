@@ -1,17 +1,17 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Functions/firebase_functions.dart';
+import 'package:flash_chat/Functions/helpers/scroll_to_bottom.dart';
 import 'package:flash_chat/Models/chat_model.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatScreen extends StatefulWidget {
   final String cloneName;
@@ -104,44 +104,47 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: CircularProgressIndicator(),
                       );
                     }
-                    return ListView(
-                      children:
-                          snapshot.data!.docs.map((DocumentSnapshot document) {
-                        Map<String, dynamic> data =
-                            document.data()! as Map<String, dynamic>;
-                        return Align(
-                          alignment: data['whoSent'] == "receiver"
-                              ? Alignment.topLeft
-                              : Alignment.topRight,
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0.r),
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: data['whoSent'] == "receiver"
-                                        ? appBarColor1
-                                        : appBarColor2,
-                                    borderRadius: BorderRadius.circular(10.r)),
-                                child: Padding(
-                                  padding: EdgeInsets.all(10.0.r),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        data['whoSent'] == 'receiver'
-                                            ? widget.cloneName
-                                            : widget.userName,
-                                        style: kWhiteTextStyle,
-                                      ),
-                                      addVerticalSpacing(5),
-                                      Text(
-                                        data['messageText'],
-                                        style: kWhiteTextStyle,
-                                      ),
-                                    ],
-                                  ),
-                                )),
-                          ),
-                        );
-                      }).toList(),
+                    return ScrollToBottom(
+                      child: ListView(
+                        children: snapshot.data!.docs
+                            .map((DocumentSnapshot document) {
+                          Map<String, dynamic> data =
+                              document.data()! as Map<String, dynamic>;
+                          return Align(
+                            alignment: data['whoSent'] == "receiver"
+                                ? Alignment.topLeft
+                                : Alignment.topRight,
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0.r),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      color: data['whoSent'] == "receiver"
+                                          ? appBarColor1
+                                          : appBarColor2,
+                                      borderRadius:
+                                          BorderRadius.circular(10.r)),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(10.0.r),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          data['whoSent'] == 'receiver'
+                                              ? widget.cloneName
+                                              : widget.userName,
+                                          style: kWhiteTextStyle,
+                                        ),
+                                        addVerticalSpacing(5),
+                                        Text(
+                                          data['messageText'],
+                                          style: kWhiteTextStyle,
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     );
                   }),
             ),
@@ -203,6 +206,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                           widget.cloneName);
                                       chatController.clear();
                                       stopSpinning();
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback(
+                                              (timeStamp) => {});
                                     }
                                   },
                                   child: CircleAvatar(
