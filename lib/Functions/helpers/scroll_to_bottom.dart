@@ -17,7 +17,7 @@ class ScrollToBottom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance!
+    WidgetsBinding.instance
         .addPostFrameCallback((_) => _scrollToBottom(context));
     return child;
   }

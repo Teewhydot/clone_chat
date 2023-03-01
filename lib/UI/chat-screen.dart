@@ -3,14 +3,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Functions/helpers/scroll_to_bottom.dart';
-import 'package:flash_chat/Models/chat_model.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -37,12 +36,34 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  Future<void> saveUserCurrentAvatar(bool clone) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool('is_clone', clone);
+  }
+
+  Future<bool> getSwitchValue() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.getBool('isSwitchOn') ?? false;
+  }
+
   final fireStore = FirebaseFirestore.instance;
   final TextEditingController chatController = TextEditingController();
+  late bool isSwitchedOn;
+
+  void toggleSwitch(bool isSwitchOn) {
+    setState(() {
+      isSwitchedOn = !isSwitchedOn;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    getSwitchValue().then((value) {
+      setState(() {
+        isSwitchedOn = value;
+      });
+    });
     chatStream = fireStore
         .collection(widget.userName)
         .doc(widget.userName)
@@ -57,9 +78,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     bool hasInternet;
     ToastContext().init(context);
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    final chatProviderListen = Provider.of<ChatProvider>(context);
-
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -83,9 +101,10 @@ class _ChatScreenState extends State<ChatScreen> {
           title: Text(widget.cloneName),
           actions: [
             Switch.adaptive(
-                value: chatProviderListen.isClone,
-                onChanged: (value) {
-                  chatProvider.toggleSwitch(value);
+                value: isSwitchedOn,
+                onChanged: (value) async {
+                  toggleSwitch(value);
+                  await saveUserCurrentAvatar(value);
                 }),
           ],
         ),
@@ -203,7 +222,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                       await addMessageToFirebase(
                                           chatController.text,
                                           context,
-                                          widget.cloneName);
+                                          widget.cloneName,
+                                          isSwitchedOn);
                                       chatController.clear();
                                       stopSpinning();
                                       WidgetsBinding.instance

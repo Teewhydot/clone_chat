@@ -1,12 +1,6 @@
-
 import 'package:flutter/material.dart';
 
-
-
-
-
 class ChatProvider extends ChangeNotifier {
-
   bool isSwitchedOn = false;
   bool get isClone => isSwitchedOn == true;
 
