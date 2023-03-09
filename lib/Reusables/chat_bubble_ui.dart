@@ -1,3 +1,5 @@
+import 'package:flash_chat/Functions/helpers/convert_firebase_timestamp.dart';
+import 'package:flash_chat/Reusables/palettes.dart';
 import 'package:flutter/material.dart';
 
 enum ChatBubbleClipper { left, right }
@@ -6,39 +8,58 @@ class CloneChatBubble extends StatelessWidget {
   final String message;
   final bool isMe;
   final bool isGroupChat;
+  final String cloneName;
+  final DateTime time;
   final ChatBubbleClipper clipper;
 
   const CloneChatBubble({
     super.key,
     required this.message,
     required this.isMe,
+    required this.cloneName,
+    required this.time,
     this.isGroupChat = false,
     this.clipper = ChatBubbleClipper.left,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        ClipPath(
-          clipper: _ChatBubbleClipper(isMe: isMe, clipper: clipper),
-          child: Container(
+    final timeStamp = time.toString().substring(11, 16);
+    final chatTime = convertTime(timeStamp);
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment:
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: isMe ? appBarColor2 : Colors.grey.shade200,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(15),
+                topRight: const Radius.circular(15),
+                bottomLeft:
+                    isMe ? const Radius.circular(15) : const Radius.circular(0),
+                bottomRight:
+                    isMe ? const Radius.circular(0) : const Radius.circular(15),
+              ),
+            ),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
             padding: const EdgeInsets.all(12),
-            color: isMe ? Colors.green : Colors.grey.shade200,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (!isMe && isGroupChat)
-                  Text(
-                    'Sender Name',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
+                Text(
+                  isMe ? 'You' : cloneName,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
+                ),
                 Text(
                   message,
                   style: TextStyle(
@@ -49,7 +70,7 @@ class CloneChatBubble extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '3:00 PM',
+                  chatTime,
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 12,
@@ -59,61 +80,8 @@ class CloneChatBubble extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
-  }
-}
-
-class _ChatBubbleClipper extends CustomClipper<Path> {
-  final bool isMe;
-  final ChatBubbleClipper clipper;
-
-  _ChatBubbleClipper({required this.isMe, required this.clipper});
-
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-
-    if (clipper == ChatBubbleClipper.right) {
-      path.lineTo(size.width - 25, 0);
-      path.quadraticBezierTo(
-        size.width,
-        0,
-        size.width,
-        25,
-      );
-      path.lineTo(size.width, size.height - 25);
-      path.quadraticBezierTo(
-        size.width,
-        size.height,
-        size.width - 25,
-        size.height,
-      );
-    } else {
-      path.moveTo(25, size.height);
-      path.quadraticBezierTo(
-        0,
-        size.height,
-        0,
-        size.height - 25,
-      );
-      path.lineTo(0, 25);
-      path.quadraticBezierTo(
-        0,
-        0,
-        25,
-        0,
-      );
-    }
-
-    path.lineTo(size.width - 25, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(_ChatBubbleClipper oldClipper) {
-    return isMe != oldClipper.isMe || clipper != oldClipper.clipper;
   }
 }

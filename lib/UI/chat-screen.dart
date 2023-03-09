@@ -4,14 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Functions/firebase_functions.dart';
 import 'package:flash_chat/Functions/helpers/scroll_to_bottom.dart';
 import 'package:flash_chat/Models/constants.dart';
+import 'package:flash_chat/Reusables/chat_bubble_ui.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:toast/toast.dart';
-
-enum ChatBubbleClipper { left, right }
 
 class ChatScreen extends StatefulWidget {
   final String cloneName;
@@ -116,39 +115,45 @@ class _ChatScreenState extends State<ChatScreen> {
                             .map((DocumentSnapshot document) {
                           Map<String, dynamic> data =
                               document.data()! as Map<String, dynamic>;
-                          return Align(
-                            alignment: data['whoSent'] == "receiver"
-                                ? Alignment.topLeft
-                                : Alignment.topRight,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0.r),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      color: data['whoSent'] == "receiver"
-                                          ? appBarColor1
-                                          : appBarColor2,
-                                      borderRadius:
-                                          BorderRadius.circular(10.r)),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10.0.r),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          data['whoSent'] == 'receiver'
-                                              ? widget.cloneName
-                                              : widget.userName,
-                                          style: kWhiteTextStyle,
-                                        ),
-                                        addVerticalSpacing(5),
-                                        Text(
-                                          data['messageText'],
-                                          style: kWhiteTextStyle,
-                                        ),
-                                      ],
-                                    ),
-                                  )),
-                            ),
+                          return CloneChatBubble(
+                            message: data['messageText'],
+                            cloneName: widget.cloneName,
+                            isMe: data['whoSent'] == 'sender',
+                            time: data['time'].toDate(),
                           );
+                          // return Align(
+                          //   alignment: data['whoSent'] == "receiver"
+                          //       ? Alignment.topLeft
+                          //       : Alignment.topRight,
+                          //   child: Padding(
+                          //     padding: EdgeInsets.all(8.0.r),
+                          //     child: Container(
+                          //         decoration: BoxDecoration(
+                          //             color: data['whoSent'] == "receiver"
+                          //                 ? appBarColor1
+                          //                 : appBarColor2,
+                          //             borderRadius:
+                          //                 BorderRadius.circular(15.r)),
+                          //         child: Padding(
+                          //           padding: EdgeInsets.all(10.0.r),
+                          //           child: Column(
+                          //             children: [
+                          //               Text(
+                          //                 data['whoSent'] == 'receiver'
+                          //                     ? widget.cloneName
+                          //                     : widget.userName,
+                          //                 style: kWhiteTextStyle,
+                          //               ),
+                          //               addVerticalSpacing(5),
+                          //               Text(
+                          //                 data['messageText'],
+                          //                 style: kWhiteTextStyle,
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         )),
+                          //   ),
+                          // );
                         }).toList(),
                       ),
                     );
@@ -213,9 +218,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                           isSwitchedOn);
                                       chatController.clear();
                                       stopSpinning();
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                              (timeStamp) => {});
                                     }
                                   },
                                   child: CircleAvatar(
