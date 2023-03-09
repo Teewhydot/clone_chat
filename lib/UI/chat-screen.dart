@@ -129,8 +129,8 @@ class _ChatScreenState extends State<ChatScreen> {
             Column(
               children: [
                 Container(
+                  height: 100,
                   width: MediaQuery.of(context).size.width,
-                  height: 50,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(20.r))),
                   child: Row(
@@ -142,8 +142,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           controller: chatController,
                           textInputAction: TextInputAction.send,
                           cursorColor: Colors.black,
-                          minLines: 1,
-                          maxLines: 5,
+                          maxLines: null,
                           keyboardType: TextInputType.multiline,
                           onChanged: (newValue) {},
                           decoration: InputDecoration(

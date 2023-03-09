@@ -1,4 +1,5 @@
 import 'package:flash_chat/Functions/helpers/convert_firebase_timestamp.dart';
+import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,7 @@ class CloneChatBubble extends StatelessWidget {
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
@@ -63,7 +64,7 @@ class CloneChatBubble extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                addVerticalSpacing(4),
                 Text(
                   chatTime,
                   style: TextStyle(
