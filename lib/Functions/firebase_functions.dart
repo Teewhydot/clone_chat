@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_chat/Functions/helpers/get_user_status.dart';
-import 'package:flash_chat/Models/chat_model.dart';
 import 'package:flash_chat/providers/user_name_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +7,6 @@ import 'package:provider/provider.dart';
 Future<void> addMessageToFirebase(String message, BuildContext context,
     String cloneName, bool isClone) async {
   final fireStore = FirebaseFirestore.instance;
-  final chatProviderListen = Provider.of<ChatProvider>(context, listen: false);
   final provider = Provider.of<UserNameProvider>(context, listen: false);
 
   await fireStore
@@ -55,7 +53,7 @@ Future<void> addCloneToFirebase(String cloneName, BuildContext context) async {
       .collection('chats')
       .add({
     'messageText':
-        'Hello, I am your new clone ${cloneName}, Tap the switch on the top right corner of your screen to switch places with me.',
+        'Hello, I am your new clone $cloneName, Tap the switch on the top right corner of your screen to switch places with me.',
     'whoSent': 'receiver',
     'time': DateTime.now(),
   });

@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
+
+enum ChatBubbleClipper { left, right }
 
 class ChatScreen extends StatefulWidget {
   final String cloneName;
@@ -20,6 +21,8 @@ class ChatScreen extends StatefulWidget {
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
+
+enum ChatBubblePosition { left, right }
 
 class _ChatScreenState extends State<ChatScreen> {
   late Stream<QuerySnapshot> chatStream;
@@ -36,19 +39,9 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  Future<void> saveUserCurrentAvatar(bool clone) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setBool('is_clone', clone);
-  }
-
-  Future<bool> getSwitchValue() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    return sharedPreferences.getBool('isSwitchOn') ?? false;
-  }
-
   final fireStore = FirebaseFirestore.instance;
   final TextEditingController chatController = TextEditingController();
-  late bool isSwitchedOn;
+  bool isSwitchedOn = false;
 
   void toggleSwitch(bool isSwitchOn) {
     setState(() {
@@ -59,11 +52,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    getSwitchValue().then((value) {
-      setState(() {
-        isSwitchedOn = value;
-      });
-    });
     chatStream = fireStore
         .collection(widget.userName)
         .doc(widget.userName)
@@ -104,7 +92,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 value: isSwitchedOn,
                 onChanged: (value) async {
                   toggleSwitch(value);
-                  await saveUserCurrentAvatar(value);
                 }),
           ],
         ),
