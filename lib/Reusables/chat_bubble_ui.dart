@@ -2,15 +2,12 @@ import 'package:flash_chat/Functions/helpers/convert_firebase_timestamp.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
 import 'package:flutter/material.dart';
 
-enum ChatBubbleClipper { left, right }
-
 class CloneChatBubble extends StatelessWidget {
   final String message;
   final bool isMe;
   final bool isGroupChat;
   final String cloneName;
   final DateTime time;
-  final ChatBubbleClipper clipper;
 
   const CloneChatBubble({
     super.key,
@@ -19,13 +16,11 @@ class CloneChatBubble extends StatelessWidget {
     required this.cloneName,
     required this.time,
     this.isGroupChat = false,
-    this.clipper = ChatBubbleClipper.left,
   });
 
   @override
   Widget build(BuildContext context) {
-    final timeStamp = time.toString().substring(11, 16);
-    final chatTime = convertTime(timeStamp);
+    final chatTime = convertTime(time.toString());
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -53,7 +48,7 @@ class CloneChatBubble extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  isMe ? 'You' : cloneName,
+                  isMe ? '' : cloneName,
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 12,

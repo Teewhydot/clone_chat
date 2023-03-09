@@ -1,18 +1,36 @@
-String convertTime(String time) {
-  // Parse the hours and minutes from the input string
-  int hours = int.parse(time.split(':')[0]);
-  int minutes = int.parse(time.split(':')[1]);
+String convertTime(String timeString, {DateTime? now}) {
+  // Parse the input string into a DateTime object
+  DateTime time = DateTime.parse(timeString);
 
-  // Determine whether it's AM or PM based on the hours
-  String suffix = hours >= 12 ? 'PM' : 'AM';
+  // If now is not provided, use the current time
+  now ??= DateTime.now();
 
-  // Convert the hours to 12-hour format
-  if (hours > 12) {
-    hours -= 12;
-  } else if (hours == 0) {
-    hours = 12;
+  // Calculate the difference between the input time and the current time
+  Duration difference = now.difference(time);
+
+  // If the difference is negative, swap the variables
+  if (difference.isNegative) {
+    difference = time.difference(now);
+    time = now;
+    now = DateTime.now();
   }
 
-  // Format the time string in 12-hour format
-  return '$hours:${minutes.toString().padLeft(2, '0')} $suffix';
+  // Determine the time suffix based on the hours
+  String suffix = time.hour >= 12 ? 'PM' : 'AM';
+
+  // Convert the hours to 12-hour format
+  int hours = time.hour % 12;
+  hours = hours == 0 ? 12 : hours;
+
+  // Format the time string based on the difference between the input time and the current time
+  if (difference.inDays == 0) {
+    // Today
+    return '$hours:${time.minute.toString().padLeft(2, '0')} $suffix';
+  } else if (difference.inDays == 1) {
+    // Yesterday
+    return 'yesterday';
+  } else {
+    // X days ago
+    return '${difference.inDays} days ago';
+  }
 }

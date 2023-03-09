@@ -121,39 +121,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             isMe: data['whoSent'] == 'sender',
                             time: data['time'].toDate(),
                           );
-                          // return Align(
-                          //   alignment: data['whoSent'] == "receiver"
-                          //       ? Alignment.topLeft
-                          //       : Alignment.topRight,
-                          //   child: Padding(
-                          //     padding: EdgeInsets.all(8.0.r),
-                          //     child: Container(
-                          //         decoration: BoxDecoration(
-                          //             color: data['whoSent'] == "receiver"
-                          //                 ? appBarColor1
-                          //                 : appBarColor2,
-                          //             borderRadius:
-                          //                 BorderRadius.circular(15.r)),
-                          //         child: Padding(
-                          //           padding: EdgeInsets.all(10.0.r),
-                          //           child: Column(
-                          //             children: [
-                          //               Text(
-                          //                 data['whoSent'] == 'receiver'
-                          //                     ? widget.cloneName
-                          //                     : widget.userName,
-                          //                 style: kWhiteTextStyle,
-                          //               ),
-                          //               addVerticalSpacing(5),
-                          //               Text(
-                          //                 data['messageText'],
-                          //                 style: kWhiteTextStyle,
-                          //               ),
-                          //             ],
-                          //           ),
-                          //         )),
-                          //   ),
-                          // );
                         }).toList(),
                       ),
                     );
