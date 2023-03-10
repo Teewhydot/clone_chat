@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_typing_uninitialized_variables, file_names
 
 import 'package:flutter/material.dart';
 
@@ -12,13 +12,14 @@ class CustomSearchBar extends StatefulWidget {
 class _CustomSearchBarState extends State<CustomSearchBar> {
   var searchController; // controller for the search text field
 
-@override
+  @override
   void initState() {
     super.initState();
     searchController.addListener(() {
       setState(() {});
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -29,8 +30,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             color: Colors.grey[200],
             borderRadius: BorderRadius.circular(10),
           ),
-          child:
-          Padding(
+          child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
@@ -43,8 +43,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                     minLines: 1,
                     maxLines: 5,
                     keyboardType: TextInputType.multiline,
-                    onChanged: (value) {
-                    },
+                    onChanged: (value) {},
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
@@ -58,7 +57,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       ),
                       border: OutlineInputBorder(
                         borderSide:
-                        const BorderSide(width: 0, style: BorderStyle.none),
+                            const BorderSide(width: 0, style: BorderStyle.none),
                         borderRadius: BorderRadius.circular(25),
                       ),
                       hintText: 'Search Chats',
@@ -70,13 +69,13 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 searchController.text.isEmpty
                     ? Container()
                     : Expanded(
-                  child: GestureDetector(
-                      onTap: () {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        searchController.clear();
-                      },
-                      child: const Icon(Icons.cancel)),
-                ),
+                        child: GestureDetector(
+                            onTap: () {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              searchController.clear();
+                            },
+                            child: const Icon(Icons.cancel)),
+                      ),
               ],
             ),
           ),

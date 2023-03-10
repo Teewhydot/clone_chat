@@ -1,9 +1,10 @@
-import 'package:flash_chat/Functions/helpers/convert_firebase_timestamp.dart';
+import 'package:flash_chat/Functions/helpers/custom_time_messages.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class CloneChatBubble extends StatelessWidget {
+class CloneChatBubble extends StatefulWidget {
   final String message;
   final bool isMe;
   final bool isGroupChat;
@@ -20,24 +21,32 @@ class CloneChatBubble extends StatelessWidget {
   });
 
   @override
+  State<CloneChatBubble> createState() => _CloneChatBubbleState();
+}
+
+class _CloneChatBubbleState extends State<CloneChatBubble> {
+  @override
   Widget build(BuildContext context) {
-    final chatTime = convertTime(time.toString());
+    timeago.setLocaleMessages('en', MyCustomTimeMessages());
+    final chatTime = timeago.format(widget.time);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
-              color: isMe ? appBarColor2 : Colors.grey.shade200,
+              color: widget.isMe ? appBarColor2 : Colors.grey.shade200,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(15),
                 topRight: const Radius.circular(15),
-                bottomLeft:
-                    isMe ? const Radius.circular(15) : const Radius.circular(0),
-                bottomRight:
-                    isMe ? const Radius.circular(0) : const Radius.circular(15),
+                bottomLeft: widget.isMe
+                    ? const Radius.circular(15)
+                    : const Radius.circular(0),
+                bottomRight: widget.isMe
+                    ? const Radius.circular(0)
+                    : const Radius.circular(15),
               ),
             ),
             constraints: BoxConstraints(
@@ -48,18 +57,18 @@ class CloneChatBubble extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Text(
+                //   isMe ? '' : cloneName,
+                //   style: TextStyle(
+                //     color: Colors.grey.shade600,
+                //     fontSize: 12,
+                //     fontWeight: FontWeight.w600,
+                //   ),
+                // ),
                 Text(
-                  isMe ? '' : cloneName,
+                  widget.message,
                   style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  message,
-                  style: TextStyle(
-                    color: isMe ? Colors.white : Colors.grey.shade800,
+                    color: widget.isMe ? Colors.white : Colors.grey.shade800,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
