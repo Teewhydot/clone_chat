@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flash_chat/Functions/helpers/custom_time_messages.dart';
 import 'package:flash_chat/Models/constants.dart';
 import 'package:flash_chat/Reusables/palettes.dart';
@@ -9,9 +11,9 @@ class CloneChatBubble extends StatefulWidget {
   final bool isMe;
   final bool isGroupChat;
   final String cloneName;
-  final DateTime time;
+  DateTime time;
 
-  const CloneChatBubble({
+  CloneChatBubble({
     super.key,
     required this.message,
     required this.isMe,
@@ -25,10 +27,16 @@ class CloneChatBubble extends StatefulWidget {
 }
 
 class _CloneChatBubbleState extends State<CloneChatBubble> {
+  String time = '';
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    timeago.setLocaleMessages('en', MyCustomTimeMessages());
+    time = timeago.format(widget.time);
+  }
+
   @override
   Widget build(BuildContext context) {
-    timeago.setLocaleMessages('en', MyCustomTimeMessages());
-    final chatTime = timeago.format(widget.time);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -57,14 +65,16 @@ class _CloneChatBubbleState extends State<CloneChatBubble> {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Text(
-                //   isMe ? '' : cloneName,
-                //   style: TextStyle(
-                //     color: Colors.grey.shade600,
-                //     fontSize: 12,
-                //     fontWeight: FontWeight.w600,
-                //   ),
-                // ),
+                widget.isMe
+                    ? Container()
+                    : Text(
+                        widget.cloneName,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                 Text(
                   widget.message,
                   style: TextStyle(
@@ -75,7 +85,7 @@ class _CloneChatBubbleState extends State<CloneChatBubble> {
                 ),
                 addVerticalSpacing(4),
                 Text(
-                  chatTime,
+                  time,
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 12,
